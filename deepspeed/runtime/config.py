@@ -681,6 +681,12 @@ def get_checkpoint_parallel_write_pipeline(checkpoint_params):
 def get_dataloader_drop_last(param_dict):
     return get_scalar_param(param_dict, DATALOADER_DROP_LAST, DATALOADER_DROP_LAST_DEFAULT)
 
+def get_plugin_type(param_dict):
+    if PLUGIN_TYPE in param_dict.keys():
+        return get_scalar_param(param_dict, PLUGIN_TYPE, PLUGIN_TYPE_DEFAULT)
+    else:
+        return PLUGIN_TYPE_DEFAULT
+
 
 '''Write deepspeed config files by modifying basic templates.
 Can be used for quickly changing parameters via command line parameters.'''
@@ -796,6 +802,7 @@ class DeepSpeedConfig(object):
         self._do_sanity_check()
 
     def _initialize_params(self, param_dict):
+        self.plugin_type = get_plugin_type(param_dict)
         self.train_batch_size = get_train_batch_size(param_dict)
         #print(f"beginning get_train_batch_size = {get_train_batch_size}")
         self.train_micro_batch_size_per_gpu = get_train_micro_batch_size_per_gpu(param_dict)
