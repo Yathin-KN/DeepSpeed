@@ -4,11 +4,10 @@
 // DeepSpeed Team
 
 /*
-Copyright 2020 The Microsoft DeepSpeed Team
-Licensed under the MIT license.
-
 Functionality for swapping optimizer tensors to/from (NVMe) storage devices.
 */
+
+#pragma once
 
 #if (__x86_64__ || __i386__)
 #include <cpuid.h>
@@ -43,4 +42,35 @@ Functionality for swapping optimizer tensors to/from (NVMe) storage devices.
 #endif
 #endif
 
-int deepspeed_py_memcpy(torch::Tensor& dest, const torch::Tensor& src);
+namespace DeepSpeedCopy {
+    int deepspeed_py_memcpy(torch::Tensor& dest, const torch::Tensor& src);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

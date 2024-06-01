@@ -23,25 +23,25 @@ public:
         }
     }
 
-    void aio_read() override {
+    void aio_read(torch::Tensor& buffer, const char* filename, const bool validate) override {
         if (device) {
-            device->aio_read();
+            device->aio_read(buffer, filename, validate);
         } else {
             std::cerr << "No device loaded" << std::endl;
         }
     }
 
-    void aio_write() override {
+    void aio_write(const torch::Tensor& buffer, const char* filename, const bool validate) override {
         if (device) {
-            device->aio_write();
+            device->aio_write(buffer, filename, validate);
         } else {
             std::cerr << "No device loaded" << std::endl;
         }
     }
 
-    void deepspeed_memcpy() override {
+    void deepspeed_memcpy(torch::Tensor& dest, const torch::Tensor& src) override {
         if (device) {
-            device->deepspeed_memcpy();
+            device->deepspeed_memcpy(dest, src);
         } else {
             std::cerr << "No device loaded" << std::endl;
         }
@@ -92,81 +92,81 @@ public:
         }
     }
 
-    void read() override {
+    void read(torch::Tensor& buffer, const char* filename, const bool validate) override {
         if (device) {
-            device->read();
+            device->read(buffer, filename, validate);
         } else {
             std::cerr << "No device loaded" << std::endl;
         }
     }
 
-    void write() override {
+    void write(const torch::Tensor& buffer, const char* filename, const bool validate) override {
         if (device) {
-            device->write();
+            device->write(buffer, filename, validate);
         } else {
             std::cerr << "No device loaded" << std::endl;
         }
     }
 
-    void pread() override {
+    void pread(const torch::Tensor& buffer, const char* filename, const bool validate, const bool async) override {
         if (device) {
-            device->pread();
+            device->pread(buffer, filename, validate, async);
         } else {
             std::cerr << "No device loaded" << std::endl;
         }
     }
 
-    void pwrite() override {
+    void pwrite(const torch::Tensor& buffer, const char* filename, const bool validate, const bool async) override {
         if (device) {
-            device->pwrite();
+            device->pwrite(buffer, filename, validate, async);
         } else {
             std::cerr << "No device loaded" << std::endl;
         }
     }
 
-    void sync_pread() override {
+    void sync_pread(torch::Tensor& buffer, const char* filename) override {
         if (device) {
-            device->sync_pread();
+            device->sync_pread(buffer, filename);
         } else {
             std::cerr << "No device loaded" << std::endl;
         }
     }
 
-    void sync_pwrite() override {
+    void sync_pwrite(const torch::Tensor& buffer, const char* filename) override {
         if (device) {
-            device->sync_pwrite();
+            device->sync_pwrite(buffer, filename);
         } else {
             std::cerr << "No device loaded" << std::endl;
         }
     }
 
-    void async_pread() override {
+    void async_pread(torch::Tensor& buffer, const char* filename) override {
         if (device) {
-            device->async_pread();
+            device->async_pread(buffer, filename);
         } else {
             std::cerr << "No device loaded" << std::endl;
         }
     }
 
-    void async_pwrite() override {
+    void async_pwrite(const torch::Tensor& buffer, const char* filename) override {
         if (device) {
-            device->async_pwrite();
+            device->async_pwrite(buffer, filename);
         } else {
             std::cerr << "No device loaded" << std::endl;
         }
     }
 
-    void new_cpu_locked_tensor() override {
+    void new_cpu_locked_tensor(const size_t num_elem, const torch::Tensor& example_tensor) override {
         if (device) {
-            device->new_cpu_locked_tensor();
+            device->new_cpu_locked_tensor(num_elem, example_tensor);
         } else {
             std::cerr << "No device loaded" << std::endl;
         }
     }
 
-    void free_cpu_locked_tensor() override {
+    void free_cpu_locked_tensor(torch::Tensor& tensor) override {
         if (device) {
-            device->free_cpu_locked_tensor();
+            device->free_cpu_locked_tensor(tensor);
         } else {
             std::cerr << "No device loaded" << std::endl;
         }
@@ -214,3 +214,46 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
         .def("free_cpu_locked_tensor", &DeepSpeedAIOTrampoline::free_cpu_locked_tensor)
         .def("wait", &DeepSpeedAIOTrampoline::wait);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
