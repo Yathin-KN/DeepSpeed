@@ -5,6 +5,7 @@
 """
 AIO
 """
+
 AIO_FORMAT = '''
 "aio": {
   "block_size": 1048576,
@@ -12,8 +13,13 @@ AIO_FORMAT = '''
   "thread_count": 1,
   "single_submit": false,
   "overlap_events": true
+  "plugin_type" : "nvme"
 }
 '''
+
+
+AIO_PLUGIN_TYPE = "nvme"
+AIO_PLUGIN_TYPE_DEFAULT = "nvme"
 AIO = "aio"
 AIO_BLOCK_SIZE = "block_size"
 AIO_BLOCK_SIZE_DEFAULT = 1048576

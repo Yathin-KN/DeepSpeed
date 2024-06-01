@@ -8,17 +8,30 @@ import subprocess
 from .plugin_manager import PluginManager
 from .builder import OpBuilder
 import os
+import deepspeed
+from deepspeed.runtime.config import DeepSpeedConfig
+
 
 class AsyncIOBuilder(OpBuilder):
     BUILD_VAR = "DS_BUILD_AIO"  
     NAME = "async_io"
 
     def __init__(self):
+        
         super().__init__(name=self.NAME)
         self.device_type = "nvme" 
+        self.device_type=self._fetch_plugin_type()
         self.plugin_manager = PluginManager()
         self.device_module = None
-
+    
+ 
+    def _fetch_plugin_type(self):
+        
+        from deepspeed.runtime.constants import AIO_PLUGIN_TYPE, AIO_PLUGIN_TYPE_DEFAULT
+        ds_engine = deepspeed.DeepSpeedEngine.module
+        ds_config = ds_engine.config
+        aio_config = getattr(ds_config, 'aio_config', {})
+        return aio_config.get(AIO_PLUGIN_TYPE, AIO_PLUGIN_TYPE_DEFAULT)
     def set_device_type(self, device_type):
         self.device_type = device_type
 
