@@ -5,6 +5,7 @@
 #include <dlfcn.h>
 #include <iostream>
 #include "../include/deepspeed_aio_base.h"
+#include <filesystem>
 
 class Trampoline {
 public:
@@ -21,12 +22,17 @@ public:
             dlclose(handle);
         }
 
-        std::string lib_name = "lib" + device_type + "_device.so";
+        std::filesystem::path so_directory = std::filesystem::current_path() / "deepspeed" / "ops" / "plugins";
+
+        std::filesystem::path lib_path = so_directory / (device_type + "_op.so");
+
         handle = dlopen(lib_name.c_str(), RTLD_LAZY);
         if (!handle) {
             std::cerr << "Cannot open library: " << dlerror() << '\n';
             return;
         }
+
+        dlerror();
 
         typedef DeepSpeedAIOBase* (*create_t)();
         create_t create_device = (create_t) dlsym(handle, "create_device");
