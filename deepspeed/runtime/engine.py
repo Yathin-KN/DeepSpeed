@@ -40,6 +40,8 @@ from deepspeed.runtime.config import DEEPSPEED_OPTIMIZERS, \
     TORCH_ADAM_PARAM, ADAM_W_MODE, ADAM_W_MODE_DEFAULT, ZERO_ONE_ADAM_OPTIMIZER, MUADAM_OPTIMIZER, MUADAMW_OPTIMIZER, \
     MUSGD_OPTIMIZER, LION_OPTIMIZER
 
+from deepspeed.runtime.config import get_plugin_type
+
 from deepspeed.runtime.dataloader import DeepSpeedDataLoader
 from deepspeed.runtime.constants import \
     ROUTE_TRAIN, ROUTE_PREDICT, ROUTE_EVAL, \
@@ -194,6 +196,7 @@ class DeepSpeedEngine(Module):
                  config_class=None,
                  dont_change_device=False):
         super(DeepSpeedEngine, self).__init__()
+        self.plugin_type = get_plugin_type(args)
         self.dont_change_device = dont_change_device
         self.client_optimizer = optimizer
         self.client_lr_scheduler = lr_scheduler
