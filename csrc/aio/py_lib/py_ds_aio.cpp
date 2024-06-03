@@ -1,14 +1,26 @@
-// Copyright (c) Microsoft Corporation.
-// SPDX-License-Identifier: Apache-2.0
+To achieve your goal where certain methods, such as `aio_write`, `aio_read`, and `load_device`, can be accessed directly, while others are accessed through an instance of `aio_handle`, you need to make sure you bind these methods appropriately. Here’s how you can do it:
 
-// DeepSpeed Team
+### Adjust the PyBind11 Module
 
+1. **Define Methods in `DeepSpeedAIOTrampoline`**: Ensure all methods are implemented within the class.
+2. **Expose Methods Appropriately**: Bind some methods directly to the module and others to the `aio_handle`.
+
+### Adjusted PyBind11 Binding Code
+
+#### Define Methods in `DeepSpeedAIOTrampoline`
+
+Ensure that all methods are implemented in the `DeepSpeedAIOTrampoline` class.
+
+```cpp
 #include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <torch/extension.h>
+#include "deepspeed_py_aio_handle.h"
+#include "deepspeed_py_copy.h"
 #include "deepspeed_aio_base.h"
 
 namespace py = pybind11;
 
+// Class definition for DeepSpeedAIOTrampoline
 class DeepSpeedAIOTrampoline : public DeepSpeedAIOBase {
 public:
     DeepSpeedAIOTrampoline() : device(nullptr) {
@@ -191,10 +203,28 @@ private:
 };
 
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
-    m.def("aio_read", &deepspeed_py_aio_read, "DeepSpeed Asynchronous I/O Read");
-    m.def("aio_write", &deepspeed_py_aio_write, "DeepSpeed Asynchronous I/O Write");
-    m.def("deepspeed_memcpy", &deepspeed_py_memcpy, "DeepSpeed Memory Copy");
+    // Standalone functions (direct access)
+    m.def("aio_write", [](const torch::Tensor& buffer, const char* filename, const bool validate) {
+        DeepSpeedAIOTrampoline aio;
+        aio.aio_write(buffer, filename, validate);
+    }, "DeepSpeed Asynchronous I/O Write");
 
+    m.def("aio_read", [](torch::Tensor& buffer, const char* filename, const bool validate) {
+        DeepSpeedAIOTrampoline aio;
+        aio.aio_read(buffer, filename, validate);
+    }, "DeepSpeed Asynchronous I/O Read");
+
+    m.def("deepspeed_memcpy", [](torch::Tensor& dest, const torch::Tensor& src) {
+        DeepSpeedAIOTrampoline aio;
+        aio.deepspeed_memcpy(dest, src);
+    }, "DeepSpeed Memory Copy");
+
+    m.def("load_device", [](const std::string& device_type) {
+        DeepSpeedAIOTrampoline aio;
+        aio.load_device(device_type);
+    }, "Load Device");
+
+    // Class definition and methods binding (access through aio_handle)
     py::class_<DeepSpeedAIOTrampoline>(m, "aio_handle")
         .def(py::init<>())
         .def("load_device", &DeepSpeedAIOTrampoline::load_device)
@@ -215,45 +245,9 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
         .def("free_cpu_locked_tensor", &DeepSpeedAIOTrampoline::free_cpu_locked_tensor)
         .def("wait", &DeepSpeedAIOTrampoline::wait);
 }
+```
 
+### Explanation of Changes
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+1. **Standalone Functions**:
+   - These functions are
