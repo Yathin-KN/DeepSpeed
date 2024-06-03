@@ -18,7 +18,7 @@ AIO_FORMAT = '''
 '''
 
 
-AIO_PLUGIN_TYPE = "nvme"
+AIO_PLUGIN_TYPE = "plugin_type"
 AIO_PLUGIN_TYPE_DEFAULT = "nvme"
 AIO = "aio"
 AIO_BLOCK_SIZE = "block_size"
