@@ -245,9 +245,6 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
         .def("free_cpu_locked_tensor", &DeepSpeedAIOTrampoline::free_cpu_locked_tensor)
         .def("wait", &DeepSpeedAIOTrampoline::wait);
 }
-```
 
-### Explanation of Changes
 
-1. **Standalone Functions**:
-   - These functions are
+

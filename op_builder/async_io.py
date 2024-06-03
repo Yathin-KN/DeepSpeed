@@ -26,11 +26,11 @@ class AsyncIOBuilder(OpBuilder):
     
  
     def _fetch_plugin_type(self):
-        
         from deepspeed.runtime.constants import AIO_PLUGIN_TYPE, AIO_PLUGIN_TYPE_DEFAULT
         ds_engine = deepspeed.DeepSpeedEngine.module
         ds_config = ds_engine.config
         aio_config = getattr(ds_config, 'aio_config', {})
+
         return aio_config.get(AIO_PLUGIN_TYPE, AIO_PLUGIN_TYPE_DEFAULT)
     def set_device_type(self, device_type):
         self.device_type = device_type
