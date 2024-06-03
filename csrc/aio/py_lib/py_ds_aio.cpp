@@ -191,12 +191,13 @@ private:
 };
 
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
-    py::class_<DeepSpeedAIOTrampoline>(m, "DeepSpeedAIOTrampoline")
+    m.def("aio_read", &deepspeed_py_aio_read, "DeepSpeed Asynchronous I/O Read");
+    m.def("aio_write", &deepspeed_py_aio_write, "DeepSpeed Asynchronous I/O Write");
+    m.def("deepspeed_memcpy", &deepspeed_py_memcpy, "DeepSpeed Memory Copy");
+
+    py::class_<DeepSpeedAIOTrampoline>(m, "aio_handle")
         .def(py::init<>())
         .def("load_device", &DeepSpeedAIOTrampoline::load_device)
-        .def("aio_read", &DeepSpeedAIOTrampoline::aio_read)
-        .def("aio_write", &DeepSpeedAIOTrampoline::aio_write)
-        .def("deepspeed_memcpy", &DeepSpeedAIOTrampoline::deepspeed_memcpy)
         .def("get_block_size", &DeepSpeedAIOTrampoline::get_block_size)
         .def("get_queue_depth", &DeepSpeedAIOTrampoline::get_queue_depth)
         .def("get_single_submit", &DeepSpeedAIOTrampoline::get_single_submit)
@@ -214,7 +215,6 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
         .def("free_cpu_locked_tensor", &DeepSpeedAIOTrampoline::free_cpu_locked_tensor)
         .def("wait", &DeepSpeedAIOTrampoline::wait);
 }
-
 
 
 
