@@ -20,19 +20,26 @@ op_builder_module = importlib.import_module(op_builder_dir)
 __op_builders__ = []
 
 
+# Import the PluginManager from the current module
 from .plugin_manager import PluginManager
 plugin_manager = PluginManager()
 
+# Iterate over all available plugins detected by the PluginManager
 for plugin_type in plugin_manager.available_plugins():
+    # Define the module name for plugin operations
     module_name = f"plugins_ops"
     try:
+        # Import the module dynamically using the op builder directory and module name
         module = importlib.import_module(f"{op_builder_dir}.{module_name}")
+        # Check if 'PluginsBuilder' is defined in the module
         if 'PluginsBuilder' in module.__dict__:
+            # Create an instance of PluginsBuilder with the plugin type
             builder = module.PluginsBuilder(plugin_type)
+            # Append the builder to the list of op builders
             __op_builders__.append(builder)
     except ModuleNotFoundError:
+        # If the module is not found, continue without doing anything
         pass
-
 
 for _, module_name, _ in pkgutil.iter_modules([os.path.dirname(op_builder_module.__file__)]):
     # avoid self references

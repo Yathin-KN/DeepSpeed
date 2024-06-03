@@ -8,50 +8,70 @@
 
 class Trampoline {
 public:
-    explicit Trampoline(const std::string& device_type) : device(nullptr), handle(nullptr)
-    {
-        load_device(device_type);
+  explicit Trampoline(const std::string& device_type) : device(nullptr), handle(nullptr) {
+    // Constructor that initializes the device and handle pointers to nullptr
+    // and loads the device based on the provided device_type
+    load_device(device_type);
+}
+
+void load_device(const std::string& device_type) {
+    if (device) {
+        // If a device is already loaded, delete it to avoid memory leaks
+        delete device;
     }
 
-    void load_device(const std::string& device_type)
-    {
-        if (device) { delete device; }
-
-        if (handle) { dlclose(handle); }
-
-        std::filesystem::path so_directory =
-            std::filesystem::current_path() / "deepspeed" / "ops" / "plugins";
-
-        std::filesystem::path lib_path = so_directory / (device_type + "_op.so");
-
-        handle = dlopen(lib_name.c_str(), RTLD_LAZY);
-        if (!handle) {
-            std::cerr << "Cannot open library: " << dlerror() << '\n';
-            return;
-        }
-
-        dlerror();
-
-        typedef DeepSpeedAIOBase* (*create_t)();
-        create_t create_device = (create_t)dlsym(handle, "create_device");
-        const char* dlsym_error = dlerror();
-        if (dlsym_error) {
-            std::cerr << "Cannot load symbol create_device: " << dlsym_error << '\n';
-            dlclose(handle);
-            handle = nullptr;
-            return;
-        }
-
-        device = create_device();
+    if (handle) {
+        // If a handle to a shared library is already open, close it
+        dlclose(handle);
     }
 
-    void aio_read(torch::Tensor& buffer, const char* filename, const bool validate)
-    {
-        if (device)
-            device->aio_read(buffer, filename, validate);
-        else
-            std::cerr << "No device loaded for aio_read\n";
+    // Construct the path to the shared library (.so file) for the device
+    std::filesystem::path so_directory =
+        std::filesystem::current_path() / "deepspeed" / "ops" / "plugins";
+
+    // Create the full path to the shared library by appending the device type and file extension
+    std::filesystem::path lib_path = so_directory / (device_type + "_op.so");
+
+    // Open the shared library with dlopen
+    handle = dlopen(lib_path.c_str(), RTLD_LAZY);
+    if (!handle) {
+        // If the library cannot be opened, print an error message and return
+        std::cerr << "Cannot open library: " << dlerror() << '\n';
+        return;
     }
+
+    // Clear any existing errors
+    dlerror();
+
+    // Define a function pointer type for the create_device function
+    typedef DeepSpeedAIOBase* (*create_t)();
+    
+    // Get the address of the create_device function from the shared library
+    create_t create_device = (create_t)dlsym(handle, "create_device");
+    const char* dlsym_error = dlerror();
+    if (dlsym_error) {
+        // If there is an error retrieving the symbol, print an error message,
+        // close the handle, and set it to nullptr
+        std::cerr << "Cannot load symbol create_device: " << dlsym_error << '\n';
+        dlclose(handle);
+        handle = nullptr;
+        return;
+    }
+
+    // Call the create_device function to create an instance of the device
+    device = create_device();
+}
+
+void aio_read(torch::Tensor& buffer, const char* filename, const bool validate) {
+    if (device) {
+        // If a device is loaded, perform the asynchronous read operation
+        device->aio_read(buffer, filename, validate);
+    } else {
+        // If no device is loaded, print an error message
+        std::cerr << "No device loaded for aio_read\n";
+    }
+}
+
     void aio_write(const torch::Tensor& buffer, const char* filename, const bool validate)
     {
         if (device)

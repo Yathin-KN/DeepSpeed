@@ -9,6 +9,7 @@
 
 class NVMEDevice : public DeepSpeedAIOBase {
 public:
+    // Constructor to initialize the AIO handle with the required parameters
     NVMEDevice() {
         aio_handle = std::make_unique<deepspeed_aio_handle_t>(get_block_size(),
                                                                get_queue_depth(),
@@ -17,6 +18,7 @@ public:
                                                                get_thread_count());
     }
 
+     // Destructor
     ~NVMEDevice() = default;
 
     void aio_read(torch::Tensor& buffer, const char* filename, const bool validate) override {
@@ -96,7 +98,8 @@ public:
     }
 
 private:
-    std::unique_ptr<deepspeed_aio_handle_t> aio_handle;
+    // Handle for managing AIO operation
+    std::unique_ptr<deepspeed_aio_handle_t> aio_handle; 
 };
 
 
