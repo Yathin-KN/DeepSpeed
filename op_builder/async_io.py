@@ -8,8 +8,7 @@ import subprocess
 from .plugin_manager import PluginManager
 from .builder import OpBuilder
 import os
-import deepspeed
-from deepspeed.runtime.config import DeepSpeedConfig
+
 
 
 class AsyncIOBuilder(OpBuilder):
@@ -19,19 +18,17 @@ class AsyncIOBuilder(OpBuilder):
     def __init__(self):
         
         super().__init__(name=self.NAME)
-        self.device_type = "nvme" 
         self.device_type=self._fetch_plugin_type()
-        self.plugin_manager = PluginManager()
-        self.device_module = None
     
  
     def _fetch_plugin_type(self):
+        import deepspeed
         from deepspeed.runtime.constants import AIO_PLUGIN_TYPE, AIO_PLUGIN_TYPE_DEFAULT
         ds_engine = deepspeed.DeepSpeedEngine.module
         ds_config = ds_engine.config
         aio_config = getattr(ds_config, 'aio_config', {})
-
         return aio_config.get(AIO_PLUGIN_TYPE, AIO_PLUGIN_TYPE_DEFAULT)
+    
     def set_device_type(self, device_type):
         self.device_type = device_type
 
@@ -41,12 +38,13 @@ class AsyncIOBuilder(OpBuilder):
     def sources(self):
         return [
             'csrc/aio/py_lib/py_ds_aio.cpp',
-            'csrc/aio/py_lib/py_ds_aio_trampoline.cpp'
+            'csrc/aio/py_lib/py_ds_aio_trampoline.cpp',
+            'csrc/aio/py_lib/trampoline.h'
         ]
 
     def load(self, verbose=True):
         op_module = super().load(verbose)
-        self.trampoline = op_module.DeepSpeedAIOTrampoline(self.device_type)
+        self.trampoline = op_module.Trampoline(self.device_type)
         return op_module
     
     def __getattr__(self, name):

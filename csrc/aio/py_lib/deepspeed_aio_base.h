@@ -1,6 +1,10 @@
 #pragma once
 
 #include <iostream>
+#include <condition_variable>
+#include <memory>
+#include <stdlib.h>
+#include <torch/extension.h>
 
 using namespace std;
 

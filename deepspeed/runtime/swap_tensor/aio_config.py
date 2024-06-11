@@ -6,6 +6,7 @@
 from deepspeed.runtime.config_utils import get_scalar_param
 from deepspeed.runtime.swap_tensor.constants import *
 
+
 AIO_DEFAULT_DICT = {
     AIO_BLOCK_SIZE: AIO_BLOCK_SIZE_DEFAULT,
     AIO_QUEUE_DEPTH: AIO_QUEUE_DEPTH_DEFAULT,

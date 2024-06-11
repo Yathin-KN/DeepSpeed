@@ -5,21 +5,16 @@
 """
 AIO
 """
-
 AIO_FORMAT = '''
 "aio": {
   "block_size": 1048576,
   "queue_depth": 8,
   "thread_count": 1,
   "single_submit": false,
-  "overlap_events": true
+  "overlap_events": true,
   "plugin_type" : "nvme"
 }
 '''
-
-
-AIO_PLUGIN_TYPE = "plugin_type"
-AIO_PLUGIN_TYPE_DEFAULT = "nvme"
 AIO = "aio"
 AIO_BLOCK_SIZE = "block_size"
 AIO_BLOCK_SIZE_DEFAULT = 1048576
@@ -31,3 +26,5 @@ AIO_SINGLE_SUBMIT = "single_submit"
 AIO_SINGLE_SUBMIT_DEFAULT = False
 AIO_OVERLAP_EVENTS = "overlap_events"
 AIO_OVERLAP_EVENTS_DEFAULT = True
+AIO_PLUGIN_TYPE = "plugin_type"
+AIO_PLUGIN_TYPE_DEFAULT = "nvme"
