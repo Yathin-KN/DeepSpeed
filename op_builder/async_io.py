@@ -5,7 +5,6 @@
 
 import distutils.spawn
 import subprocess
-from .plugin_manager import PluginManager
 from .builder import OpBuilder
 import os
 
