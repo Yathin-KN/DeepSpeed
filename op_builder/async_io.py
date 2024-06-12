@@ -16,7 +16,6 @@ class AsyncIOBuilder(OpBuilder):
     NAME = "async_io"
 
     def __init__(self):
-        
         super().__init__(name=self.NAME)
         self.device_type="nvme"
     
