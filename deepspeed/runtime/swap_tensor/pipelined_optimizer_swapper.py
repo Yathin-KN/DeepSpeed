@@ -54,7 +54,10 @@ class PipelinedOptimizerSwapper(OptimizerSwapper):
         super(PipelinedOptimizerSwapper, self).__init__(swap_config, aio_config, base_folder, optimizer, largest_numel,
                                                         device, dtype, timers)
 
+        plugin_type=aio_config[AIO_PLUGIN_TYPE]
+
         aio_op = AsyncIOBuilder().load()
+        aio_op.set_device_type(plugin_type)
         self.write_aio_handle = aio_op.aio_handle(aio_config[AIO_BLOCK_SIZE], aio_config[AIO_QUEUE_DEPTH],
                                                   aio_config[AIO_SINGLE_SUBMIT], aio_config[AIO_OVERLAP_EVENTS],
                                                   aio_config[AIO_THREAD_COUNT])
