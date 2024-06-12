@@ -181,6 +181,7 @@ class EngineTimers(object):
 
 class DeepSpeedEngine(Module):
     r"""DeepSpeed engine for training."""
+    _instance = None
 
     def __init__(self,
                  args,
@@ -196,7 +197,7 @@ class DeepSpeedEngine(Module):
                  config_class=None,
                  dont_change_device=False):
         super(DeepSpeedEngine, self).__init__()
-        self.plugin_type = get_plugin_type(args)
+        DeepSpeedEngine._instance=self
         self.dont_change_device = dont_change_device
         self.client_optimizer = optimizer
         self.client_lr_scheduler = lr_scheduler
@@ -372,6 +373,11 @@ class DeepSpeedEngine(Module):
         if self.optimizer is not None and hasattr(self.optimizer, 'destroy'):
             self.optimizer.destroy()
         debug_clear_module_and_param_names()
+     
+    def get_instance(cls):
+        if cls._instance is None:
+            raise RuntimeError("DeepSpeed Engine not initialized")
+        return cls._instance 
 
     def _get_model_parameters(self):
         if self.autotuning_profile_model_info():
