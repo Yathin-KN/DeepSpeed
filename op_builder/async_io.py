@@ -35,7 +35,7 @@ class AsyncIOBuilder(OpBuilder):
     def load(self, verbose=True):
         op_module = super().load(verbose)
         self.trampoline = op_module.Trampoline(self.device_type)
-        return op_module
+        return self.trampoline
     
     def __getattr__(self, name):
         if self.trampoline:
